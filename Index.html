@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadoras - Lixi Exchange</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f1f1f1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        h1 {
+            color: #2980b9;
+            margin-bottom: 20px;
+        }
+
+        .page-container {
+            display: none;
+        }
+
+        .page-container.active {
+            display: block;
+        }
+
+        select, input {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background-color: #2980b9;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin: 10px 0;
+        }
+
+        button:hover {
+            background-color: #3498db;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2980b9;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #2980b9;
+        }
+    </style>
+    <script>
+        function showPage(pageId) {
+            const pageContainers = document.querySelectorAll('.page-container');
+            pageContainers.forEach(container => {
+                container.classList.remove('active');
+            });
+            const selectedPage = document.getElementById(pageId);
+            selectedPage.classList.add('active');
+        }
+
+        function formatNumber(number) {
+            return number.toLocaleString('es-ES');
+        }
+
+        function quitarDiezPorCiento() {
+            const cantidad = parseFloat(document.getElementById("cantidad").value);
+            const descuento = cantidad * 0.10;
+            const nuevaCantidad = cantidad - descuento;
+            document.getElementById("resultado").innerText = `La cantidad después de quitar el 10% es: ${formatNumber(nuevaCantidad)}`;
+        }
+
+        function calcular() {
+            // Obtención de valores
+            const rangoCompra = document.getElementById("rango-compra").value;
+            const precioMin = parseFloat(document.getElementById("precio-min").value);
+            const rangoVenta = document.getElementById("rango-venta").value;
+            const precioMax = parseFloat(document.getElementById("precio-max").value);
+
+            if (isNaN(precioMin) || isNaN(precioMax)) {
+                document.getElementById("resultado").textContent = "Por favor, ingresa valores válidos.";
+                return;
+            }
+
+            if (precioMax <= precioMin) {
+                document.getElementById("resultado").textContent = "El precio máximo debe ser mayor que el precio mínimo.";
+                return;
+            }
+
+            // Cálculo del precio ajustado
+            let precioAjustado = 0;
+            if (rangoCompra === "morado" && rangoVenta === "naranja") {
+                precioAjustado = (precioMax * 0.9) / 4;
+            } else if (rangoCompra === "rojo" && rangoVenta === "naranja") {
+                precioAjustado = (precioMax * 0.9) / 2;
+            } else if (rangoCompra === "morado" && rangoVenta === "rojo") {
+                precioAjustado = (precioMax * 0.9) / 2;
+            }
+
+            // Cálculo de ganancia o pérdida
+            const diferencia = precioAjustado - precioMin;
+            const resultado = diferencia > 0
+                ? `Ganancia (${diferencia.toLocaleString()} por carta)`
+                : `Pérdida (${Math.abs(diferencia).toLocaleString()} por carta)`;
+
+            // Mostrar el resultado
+            document.getElementById("resultado").textContent = resultado;
+        }
+    </script>
+</head>
+<body>
+    <div class="page-container active" id="calculadora-rangos">
+        <div class="container">
+            <h1>Calculadora de Rangos</h1>
+            <form id="calculadora">
+                <!-- Paso 1: Selección del rango de compra -->
+                <label for="rango-compra">Rango en que se compra:</label><br>
+                <select id="rango-compra">
+                    <option value="morado">Rango Morado</option>
+                    <option value="rojo">Rango Rojo</option>
+                </select><br>
+
+                <!-- Paso 2: Ingresa el precio mínimo -->
+                <label for="precio-min">Ingresa el precio (en precio mínimo):</label><br>
+                <input type="number" id="precio-min" placeholder="Ejemplo: 10,000"><br>
+
+                <!-- Paso 3: Selección del rango de venta -->
+                <label for="rango-venta">Rango en que se vende:</label><br>
+                <select id="rango-venta">
+                    <option value="naranja">Rango Naranja</option>
+                    <option value="rojo">Rango Rojo</option>
+                </select><br>
+
+                <!-- Nuevo Paso 4: Precio de venta -->
+                <label for="precio-max">Ingresa el precio de venta (en precio máximo):</label><br>
+                <input type="number" id="precio-max" placeholder="Ejemplo: 15,000"><br>
+
+                <!-- Botón de cálculo -->
+                <button type="button" onclick="calcular()">Calcular</button>
+            </form>
+
+            <!-- Paso 6: Resultado final -->
+            <div class="result" id="resultado"></div>
+        </div>
+    </div>
+
+    <div class="page-container" id="calculadora-comision">
+        <div class="container">
+            <h1>Calculadora de Comisión</h1>
+            <label for="cantidad">Ingresa la cantidad:</label>
+            <input type="number" id="cantidad" placeholder="Cantidad" required>
+            <button onclick="quitarDiezPorCiento()">Calcular</button>
+            <p id="resultado"></p>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button onclick="showPage('calculadora-rangos')">Calculadora de Rangos</button>
+        <button onclick="showPage('calculadora-comision')">Calculadora de Comisión</button>
+    </div>
+
+    <div class="footer">
+        <p>By Lixi Exchange New Era</p>
+    </div>
+</body>
+                      </html>
+                      
